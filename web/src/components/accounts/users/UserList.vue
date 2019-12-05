@@ -151,7 +151,7 @@ export default {
   },
   methods: {
     get_users () {
-      this.$http.get('/accounts/users/').then(response => {
+      this.$http.get('/api/accounts/users/').then(response => {
         this.user_list = response.res
       }, error => {
         this.$custom_message('error', error.res)
@@ -184,7 +184,7 @@ export default {
       this.$refs.user_add_form.validate((pass) => {
         if (pass) {
           this.submit_loading = true
-          this.$http.post('/accounts/users/', this.user_add_form).then(response => {
+          this.$http.post('/api/accounts/users/', this.user_add_form).then(response => {
             this.$custom_message('success', response.res)
             this.dialogFormVisible = false
             this.get_users()
@@ -199,7 +199,7 @@ export default {
     user_del (ids = []) {
       this.$confirm('You are sure?', '提示', { type: 'warning' }).then(() => {
         if (ids.length > 0) {
-          this.$http.delete('/accounts/users/', { data: { 'id': ids } }).then(response => {
+          this.$http.delete('/api/accounts/users/', { data: { 'id': ids } }).then(response => {
             this.$custom_message('success', response.res)
             this.get_users()
           }, error => {

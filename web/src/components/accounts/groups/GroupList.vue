@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     get_groups () {
-      this.$http.get('/accounts/groups/').then(response => {
+      this.$http.get('/api/accounts/groups/').then(response => {
         this.allGroups = response.res
       }, error => {
         this.$custom_message('error', error.res)
@@ -100,7 +100,7 @@ export default {
       this.$refs.dialogForm.validate((pass) => {
         if (pass) {
           this.dialogFormLoading = true
-          this.$http.post('/accounts/groups/', this.dialogFormModel).then(response => {
+          this.$http.post('/api/accounts/groups/', this.dialogFormModel).then(response => {
             this.$custom_message('success', response.res)
             this.dialogFormVisible = false
             this.get_groups()
@@ -115,7 +115,7 @@ export default {
     deleteGroups (ids = []) {
       this.$confirm('You are sure?', '提示', { type: 'warning' }).then(() => {
         if (ids.length > 0) {
-          this.$http.delete('/accounts/groups/', { data: { 'id': ids } }).then(response => {
+          this.$http.delete('/api/accounts/groups/', { data: { 'id': ids } }).then(response => {
             this.$custom_message('success', response.res)
             this.get_groups()
           }, error => {

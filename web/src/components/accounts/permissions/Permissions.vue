@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     get_permissions () {
-      this.$http.get('/accounts/permissions/').then(response => {
+      this.$http.get('/api/accounts/permissions/').then(response => {
         this.allPermissions = response.res
       }, error => {
         this.$custom_message('error', error.res)

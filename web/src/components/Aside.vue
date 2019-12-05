@@ -1,7 +1,7 @@
 <template>
     <ul class="app-menu">
       <template v-for="(menu, index) in menus">
-        <li :key="index" v-if="$assert_permission(menu.permission)" @click="showToggle(menu)" :class="[{'miniActive': menu.active}, {'active': menu.active && !menu.is_expanded}, {'treeview': menu.secMenu}, {'is-expanded': menu.is_expanded}]">
+        <li v-if="$assert_permission(menu.permission) || $store.getters['loginModule/getUserInfo'].is_super" :key="index" @click="showToggle(menu)" :class="[{'miniActive': menu.active}, {'active': menu.active && !menu.is_expanded}, {'treeview': menu.secMenu}, {'is-expanded': menu.is_expanded}]">
           <router-link v-if="!menu.secMenu" :class="['app-menu__item', {'active': menu.active} ]" :to="menu.url">
             <font-awesome-icon :icon="menu.icon" size="lg" fixed-width />
             <span class="app-menu__label">{{ menu.text }}</span>
@@ -13,7 +13,7 @@
           </a>
           <ul v-if="menu.secMenu" class="treeview-menu">
             <template v-for="(secMenu, index) in menu.secMenu">
-              <li v-if="$assert_permission(secMenu.permission)" @click.stop="showToggle(menu, secMenu)" :key="index">
+              <li v-if="$store.getters['loginModule/getUserInfo'].is_super || $assert_permission(secMenu.permission)" @click.stop="showToggle(menu, secMenu)" :key="index">
                 <router-link :class="['treeview-item', {'active': secMenu.active}]" :to="secMenu.url">
                   <font-awesome-icon :icon="secMenu.icon" size="sm" fixed-width />{{ secMenu.text }}
                 </router-link>

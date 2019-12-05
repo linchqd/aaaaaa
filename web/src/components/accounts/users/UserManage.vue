@@ -7,7 +7,7 @@
       </div>
       <span class="content-title-info">用户信息</span>
       <template v-if="$route.name === 'users_userEdit'">
-        <template v-if="$assert_permission('')">
+        <template v-if="$store.getters['loginModule/getUserInfo'].is_super">
           <el-button v-if="userObj.is_super" type="danger" plain size="mini" @click.native="setOrMvAdmin">移除管理员</el-button>
           <el-button v-else type="danger" plain size="mini" @click.native="setOrMvAdmin">设为管理员</el-button>
         </template>
@@ -125,7 +125,7 @@
           <el-tab-pane label="拥有的权限" name="hasPermissions">
             <div class="content-title" style="padding: 0">
               <span class="content-title-info">权限列表</span>
-              <template v-if="$route.name === 'users_userEdit' && $assert_permission('')">
+              <template v-if="$route.name === 'users_userEdit' && $store.getters['loginModule/getUserInfo'].is_super">
                 <el-button type="primary" plain size="mini" @click.native="addPermissions">添加</el-button>
               </template>
             </div>
@@ -136,13 +136,13 @@
                     <th>权限ID</th>
                     <th>权限名称</th>
                     <th>权限描述</th>
-                    <th v-if="$assert_permission('') && $route.name === 'users_userEdit'">操作</th>
+                    <th v-if="$store.getters['loginModule/getUserInfo'].is_super && $route.name === 'users_userEdit'">操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   <template v-if="JSON.stringify(this.userObj.permissions) === '[]'">
                     <tr>
-                      <td :colspan="$assert_permission('') ? 4 : 3" style="text-align: center">无数据</td>
+                      <td :colspan="$store.getters['loginModule/getUserInfo'].is_super ? 4 : 3" style="text-align: center">无数据</td>
                     </tr>
                   </template>
                   <template v-else>
@@ -150,7 +150,7 @@
                       <td>{{ item.id }}</td>
                       <td>{{ item.name }}</td>
                       <td>{{ item.desc }}</td>
-                      <td v-if="$assert_permission('') && $route.name === 'users_userEdit'">
+                      <td v-if="$store.getters['loginModule/getUserInfo'].is_super && $route.name === 'users_userEdit'">
                         <el-button size="mini" plain type="warning" @click.native="removePermission(item.id)">移除</el-button>
                       </td>
                     </tr>
@@ -298,7 +298,7 @@ export default {
   },
   methods: {
     get_users (username) {
-      this.$http.get(`/accounts/users/?name=${username}`).then(response => {
+      this.$http.get(`/api/accounts/users/?name=${username}`).then(response => {
         this.userObj = response.res
         this.userObj.groups = this.$sortArr(this.userObj.groups, 'id')
         this.userObj.roles = this.$sortArr(this.userObj.roles, 'id')
@@ -312,7 +312,7 @@ export default {
       this.$refs.userUpdateFrom.validate((pass) => {
         if (pass) {
           this.userUpdateFromLoading = true
-          this.$http.put('/accounts/users/', this.userUpdateFormModel).then(response => {
+          this.$http.put('/api/accounts/users/', this.userUpdateFormModel).then(response => {
             this.$custom_message('success', response.res)
             this.userUpdateFromVisible = false
             if (this.userUpdateFormModel.name === this.userObj.name) {
@@ -338,7 +338,7 @@ export default {
       this.userModifyFormVisible = true
     },
     joinGroups () {
-      this.$http.get('/accounts/groups/').then(response => {
+      this.$http.get('/api/accounts/groups/').then(response => {
         this.allGroups = response.res
         this.userModifyFormTitle = '选择要加入的用户组'
         this.userModifyFormObj = 'joinGroup'
@@ -367,7 +367,7 @@ export default {
       }).catch(() => {})
     },
     addRoles () {
-      this.$http.get('/accounts/roles/').then(response => {
+      this.$http.get('/api/accounts/roles/').then(response => {
         this.allRoles = response.res
         this.userModifyFormTitle = '选择角色'
         this.userModifyFormObj = 'addRole'
@@ -396,7 +396,7 @@ export default {
       }).catch(() => {})
     },
     addPermissions () {
-      this.$http.get('/accounts/permissions/').then(response => {
+      this.$http.get('/api/accounts/permissions/').then(response => {
         this.allPermissions = response.res
         this.userModifyFormTitle = '选择权限'
         this.userModifyFormObj = 'addPermission'
@@ -453,7 +453,7 @@ export default {
       }).catch(() => {})
     },
     modifyUser (data) {
-      this.$http.patch('/accounts/users/', data).then(response => {
+      this.$http.patch('/api/accounts/users/', data).then(response => {
         this.$custom_message('success', response.res)
         this.get_users(this.userObj.name)
       }, error => {

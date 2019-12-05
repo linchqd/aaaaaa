@@ -56,7 +56,7 @@ export default {
           return false
         }
         this.loading = true
-        this.$http.post('/accounts/login/', this.form).then(response => {
+        this.$http.post('/api/accounts/login/', this.form).then(response => {
           this.$custom_message('success', '登录成功!')
           let arr = ['token', 'is_super', 'roles', 'nickname', 'username']
           for (let key in arr) {

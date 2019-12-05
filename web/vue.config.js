@@ -4,10 +4,13 @@ module.exports = {
     host: SERVER.host,
     port: SERVER.port,
     proxy: {
-      '/': {
+      '/api/': {
         target: SERVER.api_server_url,
         ws: true,
-        changeOrigin: true
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
       }
     }
   }

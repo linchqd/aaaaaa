@@ -74,6 +74,10 @@ function loggedIn () {
       let userInfo = {}
       let arr = ['token', 'is_super', 'roles', 'nickname', 'username']
       for (let key in arr) {
+        if (arr[key] === 'is_super') {
+          userInfo[arr[key]] = localStorage.getItem(arr[key]) === 'true'
+          continue
+        }
         userInfo[arr[key]] = localStorage.getItem(arr[key])
       }
       userInfo.roles = userInfo.roles !== null ? userInfo.roles.split(',') : []

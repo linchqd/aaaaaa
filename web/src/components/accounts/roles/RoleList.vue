@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     get_roles () {
-      this.$http.get('/accounts/roles/').then(response => {
+      this.$http.get('/api/accounts/roles/').then(response => {
         this.allRoles = response.res
       }, error => {
         this.$custom_message('error', error.res)
@@ -100,7 +100,7 @@ export default {
       this.$refs.dialogForm.validate((pass) => {
         if (pass) {
           this.dialogFormLoading = true
-          this.$http.post('/accounts/roles/', this.dialogFormModel).then(response => {
+          this.$http.post('/api/accounts/roles/', this.dialogFormModel).then(response => {
             this.$custom_message('success', response.res)
             this.dialogFormVisible = false
             this.get_roles()
@@ -115,7 +115,7 @@ export default {
     deleteRoles (ids = []) {
       this.$confirm('You are sure?', '提示', { type: 'warning' }).then(() => {
         if (ids.length > 0) {
-          this.$http.delete('/accounts/roles/', { data: { 'id': ids } }).then(response => {
+          this.$http.delete('/api/accounts/roles/', { data: { 'id': ids } }).then(response => {
             this.$custom_message('success', response.res)
             this.get_roles()
           }, error => {

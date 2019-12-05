@@ -6,7 +6,7 @@
         <span>返回</span>
       </div>
       <span class="content-title-info">角色信息</span>
-      <template v-if="$route.name === 'roles_roleEdit' && $assert_permission('')">
+      <template v-if="$route.name === 'roles_roleEdit' && $store.getters['loginModule/getUserInfo'].is_super">
         <el-button type="primary" plain size="mini" @click.native="updateRole">编辑</el-button>
       </template>
     </div>
@@ -31,7 +31,7 @@
           <el-tab-pane label="关联的用户" name="hasUsers">
             <div class="content-title" style="padding: 0">
               <span class="content-title-info">用户列表</span>
-              <template v-if="$route.name === 'roles_roleEdit' && $assert_permission('')">
+              <template v-if="$route.name === 'roles_roleEdit'">
                 <el-button type="primary" plain size="mini" @click.native="addUsers">添加</el-button>
               </template>
             </div>
@@ -115,7 +115,7 @@
           <el-tab-pane label="拥有的权限" name="hasPermissions">
             <div class="content-title" style="padding: 0">
               <span class="content-title-info">权限列表</span>
-              <template v-if="$route.name === 'roles_roleEdit' && $assert_permission('')">
+              <template v-if="$route.name === 'roles_roleEdit' && $store.getters['loginModule/getUserInfo'].is_super">
                 <el-button type="primary" plain size="mini" @click.native="addPermissions">添加</el-button>
               </template>
             </div>
@@ -126,13 +126,13 @@
                     <th>ID</th>
                     <th>权限名称</th>
                     <th>权限描述</th>
-                    <th v-if="$route.name === 'roles_roleEdit' && $assert_permission('')">操作</th>
+                    <th v-if="$route.name === 'roles_roleEdit' && $store.getters['loginModule/getUserInfo'].is_super">操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   <template v-if="JSON.stringify(this.roleObj.permissions) === '[]'">
                     <tr>
-                      <td :colspan="$assert_permission('') ? 4 : 3" style="text-align: center">无数据</td>
+                      <td :colspan="$store.getters['loginModule/getUserInfo'].is_super ? 4 : 3" style="text-align: center">无数据</td>
                     </tr>
                   </template>
                   <template v-else>
@@ -140,10 +140,8 @@
                       <td>{{ item.id }}</td>
                       <td>{{ item.name }}</td>
                       <td>{{ item.desc }}</td>
-                      <td>
-                        <template v-if="$route.name === 'roles_roleEdit' && $assert_permission('')">
+                      <td v-if="$route.name === 'roles_roleEdit' && $store.getters['loginModule/getUserInfo'].is_super">
                         <el-button size="mini" plain type="warning" @click.native="removePermission(item.id)">移除</el-button>
-                        </template>
                       </td>
                     </tr>
                   </template>
@@ -222,7 +220,7 @@ export default {
   },
   methods: {
     get_role (rName) {
-      this.$http.get(`/accounts/roles/?name=${rName}`).then(response => {
+      this.$http.get(`/api/accounts/roles/?name=${rName}`).then(response => {
         this.roleObj = response.res
         this.roleObj.users = this.$sortArr(this.roleObj.users, 'id')
         this.roleObj.groups = this.$sortArr(this.roleObj.groups, 'id')
@@ -232,7 +230,7 @@ export default {
       })
     },
     updateFunc () {
-      this.$http.put('/accounts/roles/', this.dialogFormModel).then(response => {
+      this.$http.put('/api/accounts/roles/', this.dialogFormModel).then(response => {
         this.$custom_message('success', response.res)
         this.dialogFormVisible = false
         this.$router.push({ name: 'roles_roleEdit', params: { name: this.dialogFormModel.name } })
@@ -243,7 +241,7 @@ export default {
       })
     },
     modifyFunc (data) {
-      this.$http.patch('/accounts/roles/', data).then(response => {
+      this.$http.patch('/api/accounts/roles/', data).then(response => {
         this.$custom_message('success', response.res)
         this.get_role(this.roleObj.name)
       }, error => {
@@ -257,7 +255,7 @@ export default {
       this.dialogFormVisible = true
     },
     addUsers () {
-      this.$http.get('/accounts/users/').then(response => {
+      this.$http.get('/api/accounts/users/').then(response => {
         this.dialogFormTitle = '添加用户'
         this.dialogFormShowObj = 'addUsers'
         this.dialogFormModel = { 'users': response.res }
@@ -285,7 +283,7 @@ export default {
       }).catch(() => {})
     },
     addGroups () {
-      this.$http.get('/accounts/groups/').then(response => {
+      this.$http.get('/api/accounts/groups/').then(response => {
         this.dialogFormTitle = '添加用户组'
         this.dialogFormShowObj = 'addGroups'
         this.dialogFormModel = { 'groups': response.res }
@@ -313,7 +311,7 @@ export default {
       }).catch(() => {})
     },
     addPermissions () {
-      this.$http.get('/accounts/permissions/').then(response => {
+      this.$http.get('/api/accounts/permissions/').then(response => {
         this.dialogFormTitle = '添加权限'
         this.dialogFormShowObj = 'addPermissions'
         this.dialogFormModel = { 'permissions': response.res }

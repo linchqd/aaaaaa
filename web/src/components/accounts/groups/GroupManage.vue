@@ -115,7 +115,7 @@
           <el-tab-pane label="拥有的权限" name="hasPermissions">
             <div class="content-title" style="padding: 0">
               <span class="content-title-info">权限列表</span>
-              <template v-if="$route.name === 'groups_groupEdit' && $assert_permission('')">
+              <template v-if="$route.name === 'groups_groupEdit' && $store.getters['loginModule/getUserInfo'].is_super">
                 <el-button type="primary" plain size="mini" @click.native="addPermissions">添加</el-button>
               </template>
             </div>
@@ -126,13 +126,13 @@
                     <th>ID</th>
                     <th>权限名称</th>
                     <th>权限描述</th>
-                    <th v-if="$route.name === 'groups_groupEdit' && $assert_permission('')">操作</th>
+                    <th v-if="$route.name === 'groups_groupEdit' && $store.getters['loginModule/getUserInfo'].is_super">操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   <template v-if="JSON.stringify(this.groupObj.permissions) === '[]'">
                     <tr>
-                      <td :colspan="$assert_permission('') ? 4 : 3" style="text-align: center">无数据</td>
+                      <td :colspan="$store.getters['loginModule/getUserInfo'].is_super ? 4 : 3" style="text-align: center">无数据</td>
                     </tr>
                   </template>
                   <template v-else>
@@ -140,10 +140,8 @@
                       <td>{{ item.id }}</td>
                       <td>{{ item.name }}</td>
                       <td>{{ item.desc }}</td>
-                      <td>
-                        <template v-if="$route.name === 'groups_groupEdit' && $assert_permission('')">
-                          <el-button size="mini" plain type="warning" @click.native="removePermission(item.id)">移除</el-button>
-                        </template>
+                      <td v-if="$route.name === 'groups_groupEdit' && $store.getters['loginModule/getUserInfo'].is_super">
+                        <el-button size="mini" plain type="warning" @click.native="removePermission(item.id)">移除</el-button>
                       </td>
                     </tr>
                   </template>
@@ -222,7 +220,7 @@ export default {
   },
   methods: {
     get_group (gName) {
-      this.$http.get(`/accounts/groups/?name=${gName}`).then(response => {
+      this.$http.get(`/api/accounts/groups/?name=${gName}`).then(response => {
         this.groupObj = response.res
         this.groupObj.users = this.$sortArr(this.groupObj.users, 'id')
         this.groupObj.roles = this.$sortArr(this.groupObj.roles, 'id')
@@ -233,7 +231,7 @@ export default {
       })
     },
     updateFunc () {
-      this.$http.put('/accounts/groups/', this.dialogFormModel).then(response => {
+      this.$http.put('/api/accounts/groups/', this.dialogFormModel).then(response => {
         this.$custom_message('success', response.res)
         this.dialogFormVisible = false
         this.$router.push({ name: 'groups_groupEdit', params: { name: this.dialogFormModel.name } })
@@ -244,7 +242,7 @@ export default {
       })
     },
     modifyFunc (data) {
-      this.$http.patch('/accounts/groups/', data).then(response => {
+      this.$http.patch('/api/accounts/groups/', data).then(response => {
         this.$custom_message('success', response.res)
         this.get_group(this.groupObj.name)
       }, error => {
@@ -258,7 +256,7 @@ export default {
       this.dialogFormVisible = true
     },
     addMembers () {
-      this.$http.get('/accounts/users/').then(response => {
+      this.$http.get('/api/accounts/users/').then(response => {
         this.dialogFormTitle = '添加成员'
         this.dialogFormShowObj = 'addMembers'
         this.dialogFormModel = { 'users': response.res }
@@ -286,7 +284,7 @@ export default {
       }).catch(() => {})
     },
     addRoles () {
-      this.$http.get('/accounts/roles/').then(response => {
+      this.$http.get('/api/accounts/roles/').then(response => {
         this.dialogFormTitle = '添加角色'
         this.dialogFormShowObj = 'addRoles'
         this.dialogFormModel = { 'roles': response.res }
@@ -314,7 +312,7 @@ export default {
       }).catch(() => {})
     },
     addPermissions () {
-      this.$http.get('/accounts/permissions/').then(response => {
+      this.$http.get('/api/accounts/permissions/').then(response => {
         this.dialogFormTitle = '添加权限'
         this.dialogFormShowObj = 'addPermissions'
         this.dialogFormModel = { 'permissions': response.res }
